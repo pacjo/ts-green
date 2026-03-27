@@ -62,4 +62,4 @@ create new file `.platformio/platforms/espressif32/boards/dfrobot_firebeetle2_es
 
 ## TODO:
 
-- make utils return SensorReading classes
+- [ ] make utils return SensorReading classes
