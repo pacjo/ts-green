@@ -58,3 +58,8 @@ create new file `.platformio/platforms/espressif32/boards/dfrobot_firebeetle2_es
     pio run --target compiledb
     ```
 2. (optional) restart IDE language servers
+
+
+## TODO:
+
+- make utils return SensorReading classes
