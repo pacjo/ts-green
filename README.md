@@ -1,6 +1,6 @@
 # Project SCIR
 
-## Getting started
+## Troubleshooting
 
 ### Adding Firebeetle 2 ESP32-C6 support to PlatformIO
 
@@ -49,3 +49,12 @@ create new file `.platformio/platforms/espressif32/boards/dfrobot_firebeetle2_es
 
 > [!IMPORTANT]
 > In case of python package errors use virtual env `pio` at least once. E.g. `./.platformio/penv/bin/pio run`
+
+
+### IDE completions for pio libraries
+
+1. run:
+    ```bash
+    pio run --target compiledb
+    ```
+2. (optional) restart IDE language servers
