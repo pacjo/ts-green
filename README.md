@@ -63,3 +63,4 @@ create new file `.platformio/platforms/espressif32/boards/dfrobot_firebeetle2_es
 ## TODO:
 
 - [ ] make utils return SensorReading classes
+- [ ] full queue should drop old reading instead of new ones - or should it? tbd.
