@@ -42,16 +42,8 @@ void printTempAndHumidity(void* pvParameters) {
     setupDht();
 
     while (true) {
-        float temperature = dht.readTemperature();
-        float humidity = dht.readHumidity();
-
-        Serial.print("temp: ");
-        Serial.print(temperature);
-        Serial.print(",\thumidity: ");
-        Serial.println(humidity);
-
-        pushReading(new TemperatureReading(temperature));
-        pushReading(new HumidityReading(humidity));
+        pushReading(takeTemperature());
+        pushReading(takeHumidity());
 
         // delay 500ms
         vTaskDelay(pdMS_TO_TICKS(500));
@@ -62,12 +54,9 @@ void printPhotodiode(void* pvParameters) {
     setupPhotodiode();
 
     while (true) {
-        float value = readPhotodiode();
-        Serial.print("Protodiode: ");
-        Serial.println(value);
+        pushReading(takeLight());
 
-        pushReading(new LightReading(value));
-
+        // delay 500ms
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
@@ -76,12 +65,9 @@ void printSoilMoisture(void* pvParameters) {
     setupSoilMoisture();
 
     while (true) {
-        float value = readSoilMoisture();
-        Serial.print("Soil Moisture: ");
-        Serial.println(value);
+        pushReading(takeSoilMoisture());
 
-        pushReading(new SoilMoistureReading(value));
-
+        // delay 500ms
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "data/sensor_reading.h"
+
 #define SOIL_PIN 2
 
 /*
@@ -7,4 +9,7 @@
  */
 void setupSoilMoisture();
 
-float readSoilMoisture();
+/*
+ * Take soil moisture reading.
+ */
+SoilMoistureReading* takeSoilMoisture();

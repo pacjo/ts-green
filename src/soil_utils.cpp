@@ -12,3 +12,8 @@ void setupSoilMoisture() {
 float readSoilMoisture() {
     return (MOISTURE_MAX - analogRead(SOIL_PIN)) / (float) MOISTURE_MAX;
 }
+
+SoilMoistureReading* takeSoilMoisture() {
+    float value = readSoilMoisture();
+    return new SoilMoistureReading(value);
+}

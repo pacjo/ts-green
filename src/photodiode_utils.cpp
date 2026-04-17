@@ -12,3 +12,8 @@ void setupPhotodiode() {
 float readPhotodiode() {
     return analogRead(PHOTODIODE_PIN) / (float) LIGHT_MAX;
 }
+
+LightReading* takeLight() {
+    float value = readPhotodiode();
+    return new LightReading(value);
+}

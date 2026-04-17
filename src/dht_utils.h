@@ -1,16 +1,21 @@
 #pragma once
 
-#include "DHT.h"
+#include "data/sensor_reading.h"
 
 #define DHT_PIN 5
 #define DHT_TYPE DHT22
-
-extern DHT dht;
 
 /*
  * Shorthand for dht.begin()
  */
 void setupDht();
 
-// TODO: add wrapers for humidity and temperature
-// TODO: remove extern
+/*
+ * Take humidity reading.
+ */
+HumidityReading* takeHumidity();
+
+/*
+ * Take temperature reading.
+ */
+TemperatureReading* takeTemperature();
