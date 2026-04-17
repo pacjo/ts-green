@@ -28,5 +28,7 @@ When executing some `pio`/`platformio` commands errors such as `ModuleNotFoundEr
 
 ## TODO:
 
-- [ ] make utils return SensorReading classes
+- [x] ~~make utils return SensorReading classes~~
 - [ ] full queue should drop old reading instead of new ones - or should it? tbd.
+- [ ] maybe instead of `pushReading(take*())` we just do `push*()` - this would require a way to retrive those value locally (a queue before the network queue or smth)
+- [ ] simplify all reading functions in main (since all share basically the same structure). maybe create a sensor class per each and have a generic function with this class as parameter and this class would hold setup code, measurement function and delay
