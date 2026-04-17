@@ -8,6 +8,7 @@
 #include "photodiode_utils.h"
 #include "soil_utils.h"
 
+// TODO: remove
 void blinkLedBuiltin(void* pvParameters) {
     pinMode(LED_BUILTIN, OUTPUT);
 
@@ -20,7 +21,6 @@ void blinkLedBuiltin(void* pvParameters) {
     }
 }
 
-// TODO: add hsv roll
 void colorWheelRgb(void* pvParameters) {
     setupRgbLed();
     float fR = 0, fG = 0, fB = 0, fH = 0, fS = 1, fV = 1;
