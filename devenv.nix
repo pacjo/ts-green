@@ -1,15 +1,27 @@
 { pkgs, lib, config, inputs, ... }:
 
 {
-  languages.cplusplus.enable = true;
+    languages = {
+        # PlatformIO
+        cplusplus.enable = true;
 
-  packages = with pkgs; [
-    git
-    platformio
-  ];
+        # Python server
+        python = {
+            enable = true;
+            venv.enable = true;
+            requirements = ''
+                prometheus-client
+            '';
+        };
+    };
 
-  env = {
-    # TODO: use $PWD
-    PLATFORMIO_CORE_DIR = "./.platformio";
-  };
+    packages = with pkgs; [
+        git
+        platformio
+    ];
+
+    env = {
+        # TODO: use $PWD
+        PLATFORMIO_CORE_DIR = "./sensor/.platformio";
+    };
 }

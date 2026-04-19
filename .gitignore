@@ -8,11 +8,3 @@ devenv.local.yaml
 
 # pre-commit
 .pre-commit-config.yaml
-
-# various clang
-.cache/clangd
-compile_commands.json
-
-# platformio
-.pio
-.platformio

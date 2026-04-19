@@ -1,0 +1,7 @@
+# various clang
+.cache/clangd
+compile_commands.json
+
+# platformio
+.pio
+.platformio
