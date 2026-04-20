@@ -7,6 +7,7 @@
 #include "networking/wifi_utils.h"
 #include "photodiode_utils.h"
 #include "soil_utils.h"
+#include "eink_utils.h"
 
 // TODO: remove
 void blinkLedBuiltin(void* pvParameters) {
@@ -72,6 +73,18 @@ void printSoilMoisture(void* pvParameters) {
     }
 }
 
+void handleEink(void* pvParameters) {
+    setupEink();
+    // einkDrawLogo(); // TODO: commented out right now to not run display on every restart. uncomment when necessary
+
+    while (true) {
+        /* no-op */
+
+        // delay 500ms
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
 void setup() {
     Serial.begin(115200);
     delay(1000);
@@ -88,6 +101,9 @@ void setup() {
 
     int network_priority = 10;
     xTaskCreate(sendToNetworkTask, "sendToNetwork", 4096, NULL, network_priority, NULL);
+
+    int eink_priority = 10;
+    xTaskCreate(handleEink, "handleEink", 4096, NULL, eink_priority, NULL);
 }
 
 void loop () { }
