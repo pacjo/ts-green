@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "soil_utils.h"
 
-// by experimentation - TODO: determine actual values
-int MOISTURE_MIN = 0;
-int MOISTURE_MAX = 4095;
+// by experimentation
+int MOISTURE_MIN = 2800;
+int MOISTURE_MAX = 1400;
 
 void setupSoilMoisture() {
     pinMode(SOIL_PIN, INPUT);
