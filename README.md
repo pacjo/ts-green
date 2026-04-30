@@ -36,3 +36,5 @@ When executing some `pio`/`platformio` commands errors such as `ModuleNotFoundEr
 - [ ] add json parsing error handling and reconnection support
 - [ ] maybe introduce logger which could log to serial and network?
 - [ ] optimize stack size in setup()
+- [ ] maybe namespaces to separate the same sensors per plant?
+- [ ] or just one plant
