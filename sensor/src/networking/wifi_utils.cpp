@@ -8,7 +8,7 @@ const char* password = "";
 
 // TODO: change below
 const IPAddress serverIp(10,207,185,1);
-const int serverPort = 8000;
+const int serverPort = 6000;
 
 void connectToWifi() {
     Serial.print("Connecting to WiFi...");

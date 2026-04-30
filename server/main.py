@@ -1,13 +1,27 @@
 import json
 import socket
+from threading import Thread
+
+from prometheus_client import Gauge
+from prometheus_client.exposition import start_http_server
 
 HOST = "0.0.0.0"
-PORT = 8000
+PLANT_PORT = 6000
+PROMETHEUS_PORT = 8000
 
-if __name__ == "__main__":
-    print(f"Listening on {HOST}:{PORT}")
+# make sure this is kept in sync with sensor_reading.h definitions
+METRICS = {
+    "temperature": Gauge("temperature", "Temperature sensor value"),
+    "humidity": Gauge("humidity", "Humidity sensor value"),
+    "light": Gauge("light", "Light sensor value"),
+    "soil_moisture": Gauge("soil_moisture", "Soil moisture sensor value"),
+}
+
+
+def start_plant_receiver(host: str, port: int):
+    print(f"Listening on {host}:{port}")
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((HOST, PORT))
+    server.bind((host, port))
     server.listen()
 
     print("Waiting for connection...")
@@ -33,4 +47,23 @@ if __name__ == "__main__":
 
                 message_str = message.decode("utf-8")
                 message = json.loads(message_str)
-                print(f"message: {json.dumps(message)}")
+
+                handle_message(message)
+
+
+def handle_message(message: dict):
+    print(f"message: {json.dumps(message)}")
+
+    sensor: str = message["sensor"]
+    value: float = message["value"]
+    METRICS[sensor].set(value)
+
+
+THREADS = [
+    Thread(target=start_plant_receiver, args=(HOST, PLANT_PORT)),
+    Thread(target=start_http_server, args=(PROMETHEUS_PORT,)),
+]
+
+if __name__ == "__main__":
+    for thread in THREADS:
+        thread.start()
