@@ -8,10 +8,12 @@
         # Python server
         python = {
             enable = true;
-            venv.enable = true;
-            requirements = ''
-                prometheus-client
-            '';
+            venv = {
+                enable = true;
+                requirements = ''
+                    prometheus-client
+                '';
+            };
         };
     };
 
