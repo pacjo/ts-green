@@ -24,7 +24,7 @@ EinkTask einkTask(500);
 void statusTask(void* pvParameters) {
     while (true) {
         LOG_INFO("status", "in-queue: %d;  free-heap: %u", uxQueueMessagesWaiting(sensorQueue), ESP.getFreeHeap());
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(300));
     }
 }
 
@@ -33,6 +33,7 @@ void setup() {
     delay(1000);
 
     LOG_INFO("boot", "starting up...");
+    xTaskCreate(statusTask, "status", 1024, NULL, 20, NULL);
 
     // prepare sensor queue
     setupSensorQueue();
