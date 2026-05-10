@@ -22,10 +22,12 @@
         git
 
         # sensor side
+        tio
         platformio
 
         # server side
         grafana
+        ustreamer
     ];
 
     processes = {
@@ -34,11 +36,15 @@
         grafana.exec = ''
             mkdir -p "$DEVENV_STATE/grafana/data" "$DEVENV_STATE/grafana/logs" "$DEVENV_STATE/grafana/plugins"
 
-            GF_PATHS_DATA="$DEVENV_STATE/grafana/data" \
-            GF_PATHS_LOGS="$DEVENV_STATE/grafana/logs" \
-            GF_PATHS_PLUGINS="$DEVENV_STATE/grafana/plugins" \
+            # required setup
+            export GF_PATHS_DATA="$DEVENV_STATE/grafana/data"
+            export GF_PATHS_LOGS="$DEVENV_STATE/grafana/logs"
+            export GF_PATHS_PLUGINS="$DEVENV_STATE/grafana/plugins"
+
             grafana server --homepath ${pkgs.grafana}/share/grafana
         '';
+
+        ustreamer.exec = "ustreamer --device /dev/video0 --host 0.0.0.0 --port 8081";
     };
 
     services.prometheus = {
