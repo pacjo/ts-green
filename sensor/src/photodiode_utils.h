@@ -1,12 +1,16 @@
 #pragma once
 
-#include "data/sensor_reading.h"
+#include "data/sensor_task.h"
 
 #define PHOTODIODE_PIN 6
 
-void setupPhotodiode();
+class PhotodiodeTask : public SensorTask {
+public:
+    PhotodiodeTask(int pin, unsigned long intervalMs = 500, const char* label = "");
 
-/*
- * Take light level reading.
- */
-LightReading* takeLight();
+    void setup() override;
+    SensorReading* measure() override;
+
+private:
+    int pin;
+};

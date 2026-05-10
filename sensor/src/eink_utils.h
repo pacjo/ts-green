@@ -1,15 +1,14 @@
 #pragma once
 
-/*
- * Setup E-Ink display.
- */
-void setupEink();
+#include "data/periodic_task.h"
 
-// TODO: probably to delete after proper eink usage is introduced
-/*
- * Draw project logo on eink.
- */
-void einkDrawLogo();
+class EinkTask : public PeriodicTask {
+public:
+    explicit EinkTask(unsigned long intervalMs = 500);
+
+    void setup() override;
+    void tick() override;
+};
 
 // logos from /misc converted with: https://javl.github.io/image2cpp/
 const unsigned char LOGO[] PROGMEM = {

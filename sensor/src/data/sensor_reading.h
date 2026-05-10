@@ -6,6 +6,7 @@
 class SensorReading {
 public:
     unsigned long timestamp;
+    const char* label = "";
 
     SensorReading() : timestamp(millis()) {}
     virtual ~SensorReading() = default;
@@ -28,8 +29,8 @@ public:
     int toJson(char* buf, size_t len) const override {
         return snprintf(
             buf, len,
-            "{\"sensor\":\"temperature\",\"value\":%.2f,\"scale\":\"%c\",\"ts\":%lu}",
-            value, scale, timestamp
+            "{\"sensor\":\"temperature\",\"value\":%.2f,\"scale\":\"%c\",\"id\":\"%s\",\"ts\":%lu}",
+            value, scale, label, timestamp
         );
     }
 };
@@ -46,8 +47,8 @@ public:
     int toJson(char* buf, size_t len) const override {
         return snprintf(
             buf, len,
-            "{\"sensor\":\"pressure\",\"value\":%.2f,\"unit\":\"%s\",\"ts\":%lu}",
-            value, unit, timestamp
+            "{\"sensor\":\"pressure\",\"value\":%.2f,\"unit\":\"%s\",\"id\":\"%s\",\"ts\":%lu}",
+            value, unit, label, timestamp
         );
     }
 };
@@ -62,8 +63,8 @@ public:
     int toJson(char* buf, size_t len) const override {
         return snprintf(
             buf, len,
-            "{\"sensor\":\"humidity\",\"value\":%.2f,\"ts\":%lu}",
-            value, timestamp
+            "{\"sensor\":\"humidity\",\"value\":%.2f,\"id\":\"%s\",\"ts\":%lu}",
+            value, label, timestamp
         );
     }
 };
@@ -78,8 +79,8 @@ public:
     int toJson(char* buf, size_t len) const override {
         return snprintf(
             buf, len,
-            "{\"sensor\":\"light\",\"value\":%.2f,\"ts\":%lu}",
-            value, timestamp
+            "{\"sensor\":\"light\",\"value\":%.2f,\"id\":\"%s\",\"ts\":%lu}",
+            value, label, timestamp
         );
     }
 };
@@ -94,8 +95,8 @@ public:
     int toJson(char* buf, size_t len) const override {
         return snprintf(
             buf, len,
-            "{\"sensor\":\"soil_moisture\",\"value\":%.2f,\"ts\":%lu}",
-            value, timestamp
+            "{\"sensor\":\"soil_moisture\",\"value\":%.2f,\"id\":\"%s\",\"ts\":%lu}",
+            value, label, timestamp
         );
     }
 };

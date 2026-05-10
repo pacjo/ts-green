@@ -40,3 +40,6 @@ When executing some `pio`/`platformio` commands errors such as `ModuleNotFoundEr
 - [ ] or just one plant
 - [ ] use Adafruit Unified Sensor based BMP280 library
 - [ ] rename bmp_* to pressure_* or smth
+- [ ] use (u)intNN_t
+- [ ] add `xTaskCreate(SensorTask::runTask, ...)` macro or something
+- [ ] can we replace SensorTask::getIntervalMs() with a value/attribute? - not have a function?

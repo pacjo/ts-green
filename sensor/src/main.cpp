@@ -1,7 +1,5 @@
 #include <Arduino.h>
-#include "data/sensor_reading.h"
-#include "freertos/idf_additions.h"
-#include "freertos/projdefs.h"
+#include "DHT.h"
 #include "led_utils.h"
 #include "dht_utils.h"
 #include "networking/wifi_utils.h"
@@ -10,91 +8,16 @@
 #include "eink_utils.h"
 #include "bmp_utils.h"
 
-// TODO: remove
-void blinkLedBuiltin(void* pvParameters) {
-    pinMode(LED_BUILTIN, OUTPUT);
+// sensors - TODO: move to *_utils.h
+DhtTask dhtTask(5, DHT22, 500);
+PhotodiodeTask photoTask(6, 500);
+SoilMoistureTask soilTask(2, 500);
+BmpTask bmpTask(0x76, 500);
 
-    int delay_ms = 100;
-    while (true) {
-        digitalWrite(LED_BUILTIN, HIGH);
-        vTaskDelay(pdMS_TO_TICKS(delay_ms));
-        digitalWrite(LED_BUILTIN, LOW);
-        vTaskDelay(pdMS_TO_TICKS(delay_ms));
-    }
-}
-
-void colorWheelRgb(void* pvParameters) {
-    setupRgbLed();
-    float fR = 0, fG = 0, fB = 0, fH = 0, fS = 1, fV = 1;
-
-    int delay_ms = 5;
-    while (true) {
-        HSVtoRGB(fR, fG, fB, fH, fS, fV);
-        fH = fmod(fH + 0.01, 360);
-
-        analogWrite(LED_R, fR);
-        analogWrite(LED_G, fG);
-        analogWrite(LED_B, fB);
-
-        vTaskDelay(pdMS_TO_TICKS(delay_ms));
-    }
-}
-
-void printTempAndHumidity(void* pvParameters) {
-    setupDht();
-
-    while (true) {
-        pushReading(takeTemperature());
-        pushReading(takeHumidity());
-
-        // delay 500ms
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
-
-void printPhotodiode(void* pvParameters) {
-    setupPhotodiode();
-
-    while (true) {
-        pushReading(takeLight());
-
-        // delay 500ms
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
-
-void printSoilMoisture(void* pvParameters) {
-    setupSoilMoisture();
-
-    while (true) {
-        pushReading(takeSoilMoisture());
-
-        // delay 500ms
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
-
-void handleEink(void* pvParameters) {
-    setupEink();
-    // einkDrawLogo(); // TODO: commented out right now to not run display on every restart. uncomment when necessary
-
-    while (true) {
-        /* no-op */
-
-        // delay 500ms
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
-
-void printPressure(void* pvParameters) {
-    setupBmp();
-
-    while (true) {
-        pushReading(takePressure());
-
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
+// outputs
+BlinkLedBuiltinTask blinkTask(100);
+ColorWheelRgbTask rgbTask(5);
+EinkTask einkTask(500);
 
 void setup() {
     Serial.begin(115200);
@@ -104,18 +27,18 @@ void setup() {
     setupSensorQueue();
 
     int sensor_priority = 10;
-    xTaskCreate(blinkLedBuiltin, "blinkLedBuiltin", 1024, NULL, sensor_priority, NULL);
-    xTaskCreate(colorWheelRgb, "colorWheelRgb", 1024, NULL, sensor_priority, NULL);
-    xTaskCreate(printTempAndHumidity, "printTempAndHumidity", 1024, NULL, sensor_priority, NULL);
-    xTaskCreate(printPhotodiode, "printPhotodiode", 1024, NULL, sensor_priority, NULL);
-    xTaskCreate(printSoilMoisture, "printSoilMoisture", 1024, NULL, sensor_priority, NULL);
-    xTaskCreate(printPressure, "printPressure", 1024, NULL, sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "dht",   2048, &dhtTask,    sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "photo", 1024, &photoTask,  sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "soil", 1024, &soilTask,  sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "bmp",   2048, &bmpTask,    sensor_priority, NULL);
+
+    int output_priority = 10;
+    xTaskCreate(PeriodicTask::runTask, "blink",  1024, &blinkTask, output_priority, NULL);
+    xTaskCreate(PeriodicTask::runTask, "rgb",    1024, &rgbTask,   output_priority, NULL);
+    xTaskCreate(PeriodicTask::runTask, "eink",   4096, &einkTask,  output_priority, NULL);
 
     int network_priority = 10;
     xTaskCreate(sendToNetworkTask, "sendToNetwork", 4096, NULL, network_priority, NULL);
-
-    int eink_priority = 10;
-    xTaskCreate(handleEink, "handleEink", 4096, NULL, eink_priority, NULL);
 }
 
-void loop () { }
+void loop() { }

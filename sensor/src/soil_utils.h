@@ -1,15 +1,18 @@
 #pragma once
 
-#include "data/sensor_reading.h"
+#include "data/sensor_task.h"
 
 #define SOIL_PIN 2
 
-/*
- * Shorthand for pinMode(SOIL_PIN, INPUT)
- */
-void setupSoilMoisture();
+class SoilMoistureTask : public SensorTask {
+public:
+    SoilMoistureTask(int pin, unsigned long intervalMs = 500, int rawDry = 2800, int rawWet = 1400, const char* label = "");
 
-/*
- * Take soil moisture reading.
- */
-SoilMoistureReading* takeSoilMoisture();
+    void setup() override;
+    SensorReading* measure() override;
+
+private:
+    int pin;
+    int rawDry;
+    int rawWet;
+};

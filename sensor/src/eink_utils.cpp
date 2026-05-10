@@ -1,6 +1,8 @@
 #include "GxEPD2_BW.h"
 #include "eink_utils.h"
 
+// TODO: improve this whole file
+
 // pinout used:
 //
 // - BUSY - 18
@@ -14,8 +16,16 @@
 
 GxEPD2_BW<GxEPD2_154_GDEY0154D67, GxEPD2_154_GDEY0154D67::HEIGHT> display(GxEPD2_154_GDEY0154D67(/*CS*/ 21, /*DC*/ 20, /*RST*/ 19, /*BUSY*/ 18));
 
-void setupEink() {
+EinkTask::EinkTask(unsigned long intervalMs)
+    : PeriodicTask(intervalMs) {}
+
+void EinkTask::setup() {
     display.init(115200, true, 2, false);
+    // einkDrawLogo();
+}
+
+void EinkTask::tick() {
+    // TODO: implement
 }
 
 void einkDrawLogo() {

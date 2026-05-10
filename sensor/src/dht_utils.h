@@ -1,21 +1,19 @@
 #pragma once
 
-#include "data/sensor_reading.h"
+#include "data/sensor_task.h"
 
 #define DHT_PIN 5
 #define DHT_TYPE DHT22
 
-/*
- * Shorthand for dht.begin()
- */
-void setupDht();
+class DhtTask : public SensorTask {
+public:
+    DhtTask(int pin, int dhtType = 22, unsigned long intervalMs = 500, const char* label = "");
 
-/*
- * Take humidity reading.
- */
-HumidityReading* takeHumidity();
+    void setup() override;
+    SensorReading* measure() override;
 
-/*
- * Take temperature reading.
- */
-TemperatureReading* takeTemperature();
+private:
+    int    pin;
+    int    dhtType;
+    void*  dht;   // opaque ::DHT*
+};

@@ -5,15 +5,14 @@
 int LIGHT_MIN = 0;
 int LIGHT_MAX = 4095;
 
-void setupPhotodiode() {
-    pinMode(PHOTODIODE_PIN, INPUT);
+PhotodiodeTask::PhotodiodeTask(int pin, unsigned long intervalMs, const char* label)
+    : SensorTask(intervalMs, label), pin(pin) {}
+
+void PhotodiodeTask::setup() {
+    pinMode(pin, INPUT);
 }
 
-float readPhotodiode() {
-    return analogRead(PHOTODIODE_PIN) / (float) LIGHT_MAX;
-}
-
-LightReading* takeLight() {
-    float value = readPhotodiode();
+SensorReading* PhotodiodeTask::measure() {
+    float value = analogRead(pin) / 4095.0f;
     return new LightReading(value);
 }
