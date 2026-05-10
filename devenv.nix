@@ -31,7 +31,8 @@
     ];
 
     processes = {
-        server.exec = "python3 ./server/main.py";
+        # run python unbuffered
+        server.exec = "python3 -u ./server/main.py";
 
         grafana.exec = ''
             mkdir -p "$DEVENV_STATE/grafana/data" "$DEVENV_STATE/grafana/logs" "$DEVENV_STATE/grafana/plugins"
