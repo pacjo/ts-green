@@ -7,6 +7,7 @@
 #include "soil_utils.h"
 #include "eink_utils.h"
 #include "bmp_utils.h"
+#include "logger.h"
 
 // sensors - TODO: move to *_utils.h
 DhtTask dhtTask(5, DHT22, 500);
@@ -19,17 +20,27 @@ BlinkLedBuiltinTask blinkTask(100);
 ColorWheelRgbTask rgbTask(5);
 EinkTask einkTask(500);
 
+// periodic system status
+void statusTask(void* pvParameters) {
+    while (true) {
+        LOG_INFO("status", "in-queue: %d;  free-heap: %u", uxQueueMessagesWaiting(sensorQueue), ESP.getFreeHeap());
+        vTaskDelay(pdMS_TO_TICKS(5000));
+    }
+}
+
 void setup() {
     Serial.begin(115200);
     delay(1000);
+
+    LOG_INFO("boot", "starting up...");
 
     // prepare sensor queue
     setupSensorQueue();
 
     int sensor_priority = 10;
     xTaskCreate(SensorTask::runTask, "dht",   2048, &dhtTask,    sensor_priority, NULL);
-    xTaskCreate(SensorTask::runTask, "photo", 1024, &photoTask,  sensor_priority, NULL);
-    xTaskCreate(SensorTask::runTask, "soil", 1024, &soilTask,  sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "photo", 2048, &photoTask,  sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "soil", 2048, &soilTask,  sensor_priority, NULL);
     xTaskCreate(SensorTask::runTask, "bmp",   2048, &bmpTask,    sensor_priority, NULL);
 
     int output_priority = 10;
