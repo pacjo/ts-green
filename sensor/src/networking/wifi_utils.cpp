@@ -27,9 +27,15 @@ void sendToNetworkTask(void* pvParameters) {
     connectToWifi();
 
     WiFiClient client;
-    client.connect(serverIp, serverPort);
 
     while (true) {
+        if (!client.connected()) {
+            client.stop();
+            if (!client.connect(serverIp, serverPort)) {
+                vTaskDelay(pdMS_TO_TICKS(1000));
+            }
+        }
+
         SensorReading* reading = nullptr;
 
         // skip empty queue
