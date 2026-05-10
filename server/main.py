@@ -1,6 +1,5 @@
 import json
 import socket
-from threading import Thread
 
 from prometheus_client import Gauge
 from prometheus_client.exposition import start_http_server
@@ -19,51 +18,105 @@ METRICS = {
 
 
 def start_plant_receiver(host: str, port: int):
-    print(f"Listening on {host}:{port}")
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # reuse socket after script restart
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((host, port))
     server.listen()
+    print(f"Listening on {host}:{port}")
 
-    print("Waiting for connection...")
-    conn, addr = server.accept()
+    # handle accepting new (re)connections
+    while True:
+        print("Waiting for connection...")
+        conn, addr = server.accept()
 
-    with conn:
-        print(f"Connected by {addr}")
+        with conn:
+            print(f"Connected by {addr}")
+            handle_connection(conn, addr)
 
-        buffer = b""
-        delimiter = b"\r\n"  # caused by WiFiClient.println()
 
-        while True:
+def handle_connection(conn: socket.socket, addr):
+    buffer = b""
+    delimiter = b"\r\n"
+
+    # handle one specific connection
+    while True:
+        try:
             data = conn.recv(1024)
-            if not data:
-                print(f"Connection from {addr} closed.")
-                break
+        except ConnectionResetError:
+            print(f"Connection from {addr} reset by peer.")
+            break
+        except Exception as e:
+            print(f"Unexpected error reading from {addr}: {e}")
+            break
 
-            buffer += data
+        if not data:
+            print(f"Connection from {addr} gracefully closed.")
+            break
 
-            # process all complete messages
-            while delimiter in buffer:
-                message, buffer = buffer.split(delimiter, 1)
+        buffer += data
 
-                message_str = message.decode("utf-8")
-                message = json.loads(message_str)
-
-                handle_message(message)
-
-
-def handle_message(message: dict):
-    print(f"message: {json.dumps(message)}")
-
-    sensor: str = message["sensor"]
-    value: float = message["value"]
-    METRICS[sensor].set(value)
+        # process only complete messages
+        while delimiter in buffer:
+            message_raw, buffer = buffer.split(delimiter, 1)
+            process_payload(message_raw)
 
 
-THREADS = [
-    Thread(target=start_plant_receiver, args=(HOST, PLANT_PORT)),
-    Thread(target=start_http_server, args=(PROMETHEUS_PORT,)),
-]
+def process_payload(message_raw: bytes):
+    # try decode
+    try:
+        message_str = message_raw.decode("utf-8").strip()
+    except UnicodeDecodeError:
+        print("Ignored invalid UTF-8 payload.")
+        return
+
+    # ignore empty
+    if not message_str:
+        return
+
+    # try parse
+    try:
+        message = json.loads(message_str)
+    except json.JSONDecodeError:
+        print(f"Failed to parse JSON: {message_str}")
+        return
+
+    # make sure message is what we expect
+    if not isinstance(message, dict):
+        print(f"Payload is not a JSON object: {message}")
+        return
+
+    sensor = message.get("sensor")
+    value = message.get("value")
+
+    if sensor is None or value is None:
+        print(f"Missing 'sensor' or 'value' in message: {message}")
+        return
+
+    if sensor not in METRICS:
+        print(f"Unknown sensor type '{sensor}'. Ignoring.")
+        return
+
+    # cast value
+    try:
+        numeric_value = float(value)
+    except (ValueError, TypeError):
+        print(f"Invalid numeric value for {sensor}: {value}")
+        return
+
+    # and update metric
+    print(f"Updating {sensor}: {numeric_value}")
+    METRICS[sensor].set(numeric_value)
+
 
 if __name__ == "__main__":
-    for thread in THREADS:
-        thread.start()
+    # start prometheus client (in background)
+    start_http_server(PROMETHEUS_PORT)
+    print(f"Prometheus metrics available on port {PROMETHEUS_PORT}")
+
+    # run client on main thread
+    try:
+        start_plant_receiver(HOST, PLANT_PORT)
+    except KeyboardInterrupt:
+        # catch ctrl+c
+        print("\nShutting down server.")
