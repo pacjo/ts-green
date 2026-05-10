@@ -34,6 +34,24 @@ public:
     }
 };
 
+class PressureReading final : public SensorReading {
+public:
+    float value;
+    const char* unit;
+
+    PressureReading(float value, const char* unit = "hPa") : value(value), unit(unit) {}
+
+    const char* sensorName() const override { return "pressure"; }
+
+    int toJson(char* buf, size_t len) const override {
+        return snprintf(
+            buf, len,
+            "{\"sensor\":\"pressure\",\"value\":%.2f,\"unit\":\"%s\",\"ts\":%lu}",
+            value, unit, timestamp
+        );
+    }
+};
+
 class HumidityReading final : public SensorReading {
 public:
     float value;

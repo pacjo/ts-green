@@ -8,6 +8,7 @@
 #include "photodiode_utils.h"
 #include "soil_utils.h"
 #include "eink_utils.h"
+#include "bmp_utils.h"
 
 // TODO: remove
 void blinkLedBuiltin(void* pvParameters) {
@@ -85,6 +86,16 @@ void handleEink(void* pvParameters) {
     }
 }
 
+void printPressure(void* pvParameters) {
+    setupBmp();
+
+    while (true) {
+        pushReading(takePressure());
+
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
 void setup() {
     Serial.begin(115200);
     delay(1000);
@@ -98,6 +109,7 @@ void setup() {
     xTaskCreate(printTempAndHumidity, "printTempAndHumidity", 1024, NULL, sensor_priority, NULL);
     xTaskCreate(printPhotodiode, "printPhotodiode", 1024, NULL, sensor_priority, NULL);
     xTaskCreate(printSoilMoisture, "printSoilMoisture", 1024, NULL, sensor_priority, NULL);
+    xTaskCreate(printPressure, "printPressure", 1024, NULL, sensor_priority, NULL);
 
     int network_priority = 10;
     xTaskCreate(sendToNetworkTask, "sendToNetwork", 4096, NULL, network_priority, NULL);

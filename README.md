@@ -38,3 +38,5 @@ When executing some `pio`/`platformio` commands errors such as `ModuleNotFoundEr
 - [ ] optimize stack size in setup()
 - [ ] maybe namespaces to separate the same sensors per plant?
 - [ ] or just one plant
+- [ ] use Adafruit Unified Sensor based BMP280 library
+- [ ] rename bmp_* to pressure_* or smth

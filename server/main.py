@@ -14,6 +14,7 @@ METRICS = {
     "humidity": Gauge("humidity", "Humidity sensor value"),
     "light": Gauge("light", "Light sensor value"),
     "soil_moisture": Gauge("soil_moisture", "Soil moisture sensor value"),
+    "pressure": Gauge("pressure", "Pressure sensor value"),
 }
 
 
