@@ -40,6 +40,8 @@ def process_payload(data: bytes, addr):
     if not message_str:
         return
 
+    print(f"From {addr}: {message_str}")
+
     # try parse
     try:
         message = json.loads(message_str)
