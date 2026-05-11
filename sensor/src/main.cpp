@@ -33,10 +33,12 @@ void setup() {
     delay(1000);
 
     LOG_INFO("boot", "starting up...");
-    xTaskCreate(statusTask, "status", 1024, NULL, 20, NULL);
 
     // prepare sensor queue
     setupSensorQueue();
+
+    // create monitor task
+    xTaskCreate(statusTask, "status", 1024, NULL, 20, NULL);
 
     int sensor_priority = 10;
     xTaskCreate(SensorTask::runTask, "dht",   2048, &dhtTask,    sensor_priority, NULL);

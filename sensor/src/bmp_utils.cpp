@@ -14,9 +14,9 @@ void BmpTask::setup() {
     sensor->begin();
 }
 
-SensorReading* BmpTask::measure() {
+std::vector<SensorReading*> BmpTask::measure() {
     auto* sensor = static_cast<BMP280*>(bmp);
     float pressure = sensor->getPressure() / 100.0f;
 
-    return new PressureReading(pressure);
+    return { new PressureReading(pressure) };
 }

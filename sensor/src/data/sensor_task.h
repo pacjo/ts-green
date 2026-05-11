@@ -11,12 +11,13 @@ public:
     const char* label;
 
     void tick() override final {
-        SensorReading* reading = measure();
-        reading->label = this->label;
-        pushReading(reading);
+        for (auto reading : measure()) {
+            reading->label = this->label;
+            pushReading(reading);
+        }
     }
 
-    virtual SensorReading* measure();
+    virtual std::vector<SensorReading*> measure();
 
 protected:
     explicit SensorTask(unsigned long intervalMs, const char* label = "")

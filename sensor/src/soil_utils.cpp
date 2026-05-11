@@ -12,7 +12,7 @@ void SoilMoistureTask::setup() {
     pinMode(pin, INPUT);
 }
 
-SensorReading* SoilMoistureTask::measure() {
+std::vector<SensorReading*> SoilMoistureTask::measure() {
     float value = (rawWet - analogRead(pin)) / static_cast<float>(rawWet);
-    return new SoilMoistureReading(value);
+    return { new SoilMoistureReading(value) };
 }

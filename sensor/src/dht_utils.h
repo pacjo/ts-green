@@ -10,7 +10,7 @@ public:
     DhtTask(int pin, int dhtType = 22, unsigned long intervalMs = 500, const char* label = "");
 
     void setup() override;
-    SensorReading* measure() override;
+    std::vector<SensorReading*> measure() override;
 
 private:
     int    pin;

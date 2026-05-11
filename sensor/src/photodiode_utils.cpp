@@ -12,7 +12,7 @@ void PhotodiodeTask::setup() {
     pinMode(pin, INPUT);
 }
 
-SensorReading* PhotodiodeTask::measure() {
+std::vector<SensorReading*> PhotodiodeTask::measure() {
     float value = analogRead(pin) / 4095.0f;
-    return new LightReading(value);
+    return { new LightReading(value) };
 }

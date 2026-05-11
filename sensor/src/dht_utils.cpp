@@ -11,10 +11,11 @@ void DhtTask::setup() {
     static_cast<DHT*>(dht)->begin();
 }
 
-SensorReading* DhtTask::measure() {
+std::vector<SensorReading*> DhtTask::measure() {
     auto* sensor = static_cast<DHT*>(dht);
 
-    // TODO: figure out how to return both at the same time
-    return new TemperatureReading(sensor->readTemperature(), 'C');
-    // return new HumidityReading(sensor->readHumidity());
+    SensorReading* temperature = new TemperatureReading(sensor->readTemperature(), 'C');
+    SensorReading* humidity = new HumidityReading(sensor->readHumidity());
+
+    return {temperature, humidity};
 }

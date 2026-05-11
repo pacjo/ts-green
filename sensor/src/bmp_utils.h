@@ -7,7 +7,7 @@ public:
     BmpTask(uint8_t i2cAddr = 0x76, unsigned long intervalMs = 500, const char* label = "");
 
     void setup() override;
-    SensorReading* measure() override;
+    std::vector<SensorReading*> measure() override;
 
 private:
     uint8_t i2cAddr;
