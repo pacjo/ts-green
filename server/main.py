@@ -19,56 +19,21 @@ METRICS = {
 
 
 def start_plant_receiver(host: str, port: int):
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # reuse socket after script restart
+    server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((host, port))
-    server.listen()
-    print(f"Listening on {host}:{port}")
+    print(f"Listening on UDP {host}:{port}")
 
-    # handle accepting new (re)connections
     while True:
-        print("Waiting for connection...")
-        conn, addr = server.accept()
-
-        with conn:
-            print(f"Connected by {addr}")
-            handle_connection(conn, addr)
+        data, addr = server.recvfrom(1024)
+        process_payload(data, addr)
 
 
-def handle_connection(conn: socket.socket, addr):
-    buffer = b""
-    delimiter = b"\r\n"
-
-    # handle one specific connection
-    while True:
-        try:
-            data = conn.recv(1024)
-        except ConnectionResetError:
-            print(f"Connection from {addr} reset by peer.")
-            break
-        except Exception as e:
-            print(f"Unexpected error reading from {addr}: {e}")
-            break
-
-        if not data:
-            print(f"Connection from {addr} gracefully closed.")
-            break
-
-        buffer += data
-
-        # process only complete messages
-        while delimiter in buffer:
-            message_raw, buffer = buffer.split(delimiter, 1)
-            process_payload(message_raw)
-
-
-def process_payload(message_raw: bytes):
-    # try decode
+def process_payload(data: bytes, addr):
     try:
-        message_str = message_raw.decode("utf-8").strip()
+        message_str = data.decode("utf-8").strip()
     except UnicodeDecodeError:
-        print("Ignored invalid UTF-8 payload.")
+        print(f"Ignored invalid UTF-8 payload from {addr}.")
         return
 
     # ignore empty
@@ -79,34 +44,33 @@ def process_payload(message_raw: bytes):
     try:
         message = json.loads(message_str)
     except json.JSONDecodeError:
-        print(f"Failed to parse JSON: {message_str}")
+        print(f"Failed to parse JSON from {addr}: {message_str}")
         return
 
     # make sure message is what we expect
     if not isinstance(message, dict):
-        print(f"Payload is not a JSON object: {message}")
+        print(f"Payload is not a JSON object from {addr}: {message}")
         return
 
     sensor = message.get("sensor")
     value = message.get("value")
 
     if sensor is None or value is None:
-        print(f"Missing 'sensor' or 'value' in message: {message}")
+        print(f"Missing 'sensor' or 'value' in message from {addr}: {message}")
         return
 
     if sensor not in METRICS:
-        print(f"Unknown sensor type '{sensor}'. Ignoring.")
+        print(f"Unknown sensor type '{sensor}' from {addr}. Ignoring.")
         return
 
     # cast value
     try:
         numeric_value = float(value)
     except (ValueError, TypeError):
-        print(f"Invalid numeric value for {sensor}: {value}")
+        print(f"Invalid numeric value for {sensor} from {addr}: {value}")
         return
 
     # and update metric
-    print(f"Updating {sensor}: {numeric_value}")
     METRICS[sensor].set(numeric_value)
 
 
