@@ -38,18 +38,18 @@ void setup() {
     setupSensorQueue();
 
     // create monitor task
-    xTaskCreate(statusTask, "status", 1024, NULL, 20, NULL);
+    //xTaskCreate(statusTask, "status", 1024, NULL, 20, NULL);
 
     int sensor_priority = 10;
-    xTaskCreate(SensorTask::runTask, "dht",   2048, &dhtTask,    sensor_priority, NULL);
-    xTaskCreate(SensorTask::runTask, "photo", 2048, &photoTask,  sensor_priority, NULL);
-    xTaskCreate(SensorTask::runTask, "soil", 2048, &soilTask,  sensor_priority, NULL);
-    xTaskCreate(SensorTask::runTask, "bmp",   2048, &bmpTask,    sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "dht", 2048, &dhtTask, sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "photo", 2048, &photoTask, sensor_priority, NULL);
+    xTaskCreate(SensorTask::runTask, "soil", 2048, &soilTask, sensor_priority, NULL);
+    // xTaskCreate(SensorTask::runTask, "bmp", 2048, &bmpTask, sensor_priority, NULL); // TODO: rewire and reconnect
 
     int output_priority = 10;
-    xTaskCreate(PeriodicTask::runTask, "blink",  1024, &blinkTask, output_priority, NULL);
-    xTaskCreate(PeriodicTask::runTask, "rgb",    1024, &rgbTask,   output_priority, NULL);
-    xTaskCreate(PeriodicTask::runTask, "eink",   4096, &einkTask,  output_priority, NULL);
+    xTaskCreate(PeriodicTask::runTask, "blink", 1024, &blinkTask, output_priority, NULL);
+    xTaskCreate(PeriodicTask::runTask, "rgb", 1024, &rgbTask, output_priority, NULL);
+    xTaskCreate(PeriodicTask::runTask, "eink", 4096, &einkTask, output_priority, NULL);
 
     int network_priority = 10;
     xTaskCreate(sendToNetworkTask, "sendToNetwork", 4096, NULL, network_priority, NULL);
