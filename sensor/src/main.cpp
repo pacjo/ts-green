@@ -44,7 +44,7 @@ void setup() {
     xTaskCreate(SensorTask::runTask, "dht", 2048, &dhtTask, sensor_priority, NULL);
     xTaskCreate(SensorTask::runTask, "photo", 2048, &photoTask, sensor_priority, NULL);
     xTaskCreate(SensorTask::runTask, "soil", 2048, &soilTask, sensor_priority, NULL);
-    // xTaskCreate(SensorTask::runTask, "bmp", 2048, &bmpTask, sensor_priority, NULL); // TODO: rewire and reconnect
+    xTaskCreate(SensorTask::runTask, "bmp", 2048, &bmpTask, sensor_priority, NULL);
 
     int output_priority = 10;
     xTaskCreate(PeriodicTask::runTask, "blink", 1024, &blinkTask, output_priority, NULL);
