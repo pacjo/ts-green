@@ -11,7 +11,7 @@
 
 // sensors - TODO: move to *_utils.h
 DhtTask dhtTask(5, DHT22, 500);
-PhotodiodeTask photoTask(6, 500);
+PhotodiodeTask photoTask(4, 500);
 SoilMoistureTask soilTask(2, 500);
 BmpTask bmpTask(0x76, 500);
 
